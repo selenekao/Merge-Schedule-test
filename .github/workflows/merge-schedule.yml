@@ -7,16 +7,17 @@ on:
       - edited
       - synchronize
   schedule:
+    # 測試先維持每 5 分鐘巡邏一次
     - cron: '*/5 * * * *'
-
-# 💡 關鍵：直接在腳本裡跟 GitHub 申請這兩項權限，就不用去動網頁設定了！
-permissions:
-  contents: write
-  pull-requests: write
 
 jobs:
   merge_schedule:
     runs-on: ubuntu-latest
+    # 💡 關鍵：把權限直接強制塞在 job 裡面！這樣舊分支就絕對不會噴權限錯誤了
+    permissions:
+      contents: write
+      pull-requests: write
+      statuses: read
     steps:
       - uses: gr2m/merge-schedule-action@v2
         with:
