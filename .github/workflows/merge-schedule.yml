@@ -1,19 +1,13 @@
 name: Merge Schedule
 
 on:
-  pull_request:
-    types:
-      - opened
-      - edited
-      - synchronize
   schedule:
-    # 測試先維持每 5 分鐘巡邏一次
+    # 保持每 5 分鐘巡邏一次
     - cron: '*/5 * * * *'
 
 jobs:
   merge_schedule:
     runs-on: ubuntu-latest
-    # 💡 關鍵：把權限直接強制塞在 job 裡面！這樣舊分支就絕對不會噴權限錯誤了
     permissions:
       contents: write
       pull-requests: write
