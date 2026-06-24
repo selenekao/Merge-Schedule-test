@@ -1,13 +1,15 @@
 name: Merge Schedule
 
 on:
+  # 💡 加上這行，網頁上就會立刻多出一顆手動執行的按鈕，不用再等 GitHub 的大塞車公車
+  workflow_dispatch:
+
   pull_request:
     types:
       - opened
       - edited
       - synchronize
   schedule:
-    # https://crontab.guru/every-hour
     - cron: '*/5 * * * *'
 
 jobs:
@@ -16,16 +18,8 @@ jobs:
     steps:
       - uses: gr2m/merge-schedule-action@v2
         with:
-          # Merge method to use. Possible values are merge, squash or
-          # rebase. Default is merge.
           merge_method: squash
-          # Time zone to use. Default is UTC.
           time_zone: 'Asia/Taipei'
-          # Require all pull request statuses to be successful before
-          # merging. Default is `false`.
           require_statuses_success: 'false'
-          # Label to apply to the pull request if the merge fails. Default is
-          # `automerge-fail`.
-          automerge_fail_label: 'merge-schedule-failed'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
