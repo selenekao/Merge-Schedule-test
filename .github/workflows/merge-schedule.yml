@@ -1,58 +1,22 @@
-name: Merge Schedule DIY
+name: Merge Schedule
 
 on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
   schedule:
-    # 測試先用每 5 分鐘巡邏一次
     - cron: '*/5 * * * *'
 
 jobs:
-  merge_diy:
+  merge_schedule:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
-      - name: Check and Merge PR
-        uses: actions/github-script@v7
+      - uses: gr2m/merge-schedule-action@v2
         with:
-          script: |
-            // 1. 撈出所有打開的 PR
-            const prs = await github.rest.pulls.list({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open'
-            });
-
-            const now = new Date();
-            console.log(`目前系統時間 (UTC): ${now.toISOString()}`);
-
-            for (const pr of prs.data) {
-              // 2. 用正規表達式去抓 PR 說明裡的 /schedule 內容
-              const body = pr.body || "";
-              const match = body.match(/\/schedule\s+([^\s\r\n]+)/);
-
-              if (match) {
-                const scheduleStr = match[1]; // 抓到時間字串
-                const targetTime = new Date(scheduleStr); // 轉換成時間物件
-
-                if (isNaN(targetTime.getTime())) {
-                  console.log(`PR #${pr.number} 格式錯誤，無法解析時間: ${scheduleStr}`);
-                  continue;
-                }
-
-                console.log(`PR #${pr.number} 預約時間為: ${targetTime.toISOString()}`);
-
-                // 3. 檢查時間到了沒，到了就立刻合併
-                if (now >= targetTime) {
-                  console.log(`時間已到！正在自動合併 PR #${pr.number}`);
-                  await github.rest.pulls.merge({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    pull_number: pr.number,
-                    merge_method: 'squash'
-                  });
-                } else {
-                  console.log(`PR #${pr.number} 時間還沒到，繼續等待。`);
-                }
-              }
-            }
+          merge_method: squash
+          time_zone: 'Asia/Taipei'
+          require_statuses_success: 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
