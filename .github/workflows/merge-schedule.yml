@@ -1,6 +1,9 @@
 name: Merge Schedule
 
 on:
+  # 💡 加上這行，網頁上就會立刻多出一顆手動執行的按鈕，不用再等 GitHub 的大塞車公車
+  workflow_dispatch:
+
   pull_request:
     types:
       - opened
