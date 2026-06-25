@@ -20,6 +20,6 @@ jobs:
         with:
           merge_method: squash
           time_zone: 'Asia/Taipei'
-          require_statuses_success: 'false'
+          require_statuses_success: 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
